@@ -31,11 +31,16 @@ def check_img(matching_image_name: str):
 
     corr2 = np.amax(res)
     print("corr2:", range_to_percent_pretty(corr2))
-    if corr2 > 0.4:
+
+    correlation_threshold = 0.4
+    corr_pass: bool = corr2 > 0.4
+
+    if corr_pass:
         print(Fore.GREEN + "PASS")
     else:
         print(Fore.RED + "FAIL")
     print(Style.RESET_ALL, end='')
+    return corr_pass
 
 
 if __name__ == '__main__':
@@ -45,7 +50,7 @@ if __name__ == '__main__':
     # A list of files in the image directory
     (_, _, image_list) = next(walk(IMAGE_DIR))
 
-    print(f"Scanning through {image_list}")
+    print("Scanning through", image_list)
 
     # Check the correlation of each image in the list
     for image in image_list:
