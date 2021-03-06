@@ -1,10 +1,13 @@
+#!/usr/bin/env python3
 from colorama import Fore, Style
 import cv2
 import numpy as np
-from os import walk
+# from os import walk
+import os
+import argparse
 
 IMAGE_DIR = './image'
-TEMPLATE_IMAGE = IMAGE_DIR + '/' + 'template.png'
+ORIG_TEMPLATE_IMAGE = f"{IMAGE_DIR}/template.png"
 
 
 # Turn a value from a range of [-1, 1] into a percentage string,
@@ -18,22 +21,51 @@ def range_to_percent_pretty(value: float) -> str:
     )
 
 
+def parse_cmdline_args():
+    parser = argparse.ArgumentParser(
+        description='A program that finds the similarity'
+                    ' of flags and returns a PASS or FAIL'
+    )
+    parser.add_argument(
+        '--input',
+        nargs='?',
+        help='The file selected to compare with the template.',
+        type=str
+    )
+    parser.add_argument(
+        '--template',
+        nargs='?',
+        help='The file selected to be compared with.',
+        type=str
+    )
+    args = parser.parse_args()
+    return args
+
+
 # Check if a given image file name is similar to or different to the original
-def check_img(matching_image_name: str):
-    img = cv2.imread(matching_image_name, 0)
+def check_img(matching_image_name: str, template) -> bool:
+    matching_image_img = cv2.imread(matching_image_name, 0)
 
     print("\nChecking", matching_image_name)
 
-    res = cv2.matchTemplate(template_img, img, cv2.TM_CCOEFF_NORMED)
+    res = cv2.matchTemplate(template, matching_image_img, cv2.TM_CCOEFF_NORMED)
 
-    corr = res[0][0]
-    print("corr:", range_to_percent_pretty(corr))
+    # Get the first item matching the template (not accurate)
+    corr_first = res[0][0]
+    print("first item :", range_to_percent_pretty(corr_first))
 
-    corr2 = np.amax(res)
-    print("corr2:", range_to_percent_pretty(corr2))
+    # Find the highest correlation points (more accurate)
+    corr_max = np.amax(res)
+    print("max        :", range_to_percent_pretty(corr_max))
 
-    correlation_threshold = 0.4
-    corr_pass: bool = corr2 > 0.4
+    # Find the average of the correlation points (most accurate)
+    corr_mean = np.mean(res)
+    print("mean       :", range_to_percent_pretty(corr_mean))
+
+    # If the correlation is above
+    # correlation_threshold, then it has passed
+    correlation_threshold = 0.5
+    corr_pass = corr_max > correlation_threshold
 
     if corr_pass:
         print(Fore.GREEN + "PASS")
@@ -44,14 +76,33 @@ def check_img(matching_image_name: str):
 
 
 if __name__ == '__main__':
-    # Open the template image
-    template_img = cv2.imread(TEMPLATE_IMAGE, 0)
+    arguments = parse_cmdline_args()
 
-    # A list of files in the image directory
-    (_, _, image_list) = next(walk(IMAGE_DIR))
+    # If there are arguments, use them instead
+    # of the original template image path
+    template_img_pathname: str
+    if arguments.template is None:
+        template_img_pathname = ORIG_TEMPLATE_IMAGE
+    else:
+        template_img_pathname = arguments.template
+
+    print("Template image:", template_img_pathname)
+
+    # Opens the template image
+    template_img = cv2.imread(
+        template_img_pathname,
+        0
+    )
+
+    if arguments.input is None:
+        # Get a list of files in the image directory
+        (_, _, image_list) = next(os.walk(IMAGE_DIR))
+        image_list = [f"{IMAGE_DIR}/{item}" for item in image_list]
+    else:
+        image_list = [arguments.input]
 
     print("Scanning through", image_list)
 
     # Check the correlation of each image in the list
     for image in image_list:
-        check_img(f"{IMAGE_DIR}/{image}")
+        check_img(image, template_img)

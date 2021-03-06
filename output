@@ -1,0 +1,32 @@
+Scanning through ['template.png', 'soldier.jpg', 'russian-flag.png', 'american_flag2.png', 'american_flag_black.png']
+
+Checking ./image/template.png
+first item : [32m100.00%[0m
+max        : [32m100.00%[0m
+mean       : [32m100.00%[0m
+[32mPASS
+[0m
+Checking ./image/soldier.jpg
+first item : [32m60.23%[0m
+max        : [32m66.97%[0m
+mean       : [31m48.89%[0m
+[31mFAIL
+[0m
+Checking ./image/russian-flag.png
+first item : [31m42.71%[0m
+max        : [31m44.85%[0m
+mean       : [31m42.55%[0m
+[31mFAIL
+[0m
+Checking ./image/american_flag2.png
+first item : [32m56.18%[0m
+max        : [32m79.59%[0m
+mean       : [32m69.91%[0m
+[32mPASS
+[0m
+Checking ./image/american_flag_black.png
+first item : [31m49.68%[0m
+max        : [32m52.78%[0m
+mean       : [32m50.28%[0m
+[31mFAIL
+[0m
