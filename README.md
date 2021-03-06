@@ -1,2 +1,2 @@
-# parth-sucks
-hackathon 2021
+# Military Unit Recognizer
+Part of EVPC Hacks 2021
