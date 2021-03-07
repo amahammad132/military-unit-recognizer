@@ -15,7 +15,7 @@ ORIG_TEMPLATE_IMAGE = f"{IMAGE_DIR}/template.png"
 def range_to_percent_pretty(value: float) -> str:
     percentage_val = (50 * (value + 1))
     return "%s%.2f%%%s" % (
-        (Fore.GREEN if percentage_val >= 50 else Fore.RED),
+        (Fore.GREEN if percentage_val >= 75 else Fore.RED),
         percentage_val,
         Style.RESET_ALL
     )
