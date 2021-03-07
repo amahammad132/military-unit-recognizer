@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+import argparse
 from colorama import Fore, Style
 import cv2
 import numpy as np
-# from os import walk
-import os
-import argparse
+from os import walk
+from typing import List
 
 IMAGE_DIR = './image'
 ORIG_TEMPLATE_IMAGE = f"{IMAGE_DIR}/template.png"
@@ -19,27 +19,6 @@ def range_to_percent_pretty(value: float) -> str:
         percentage_val,
         Style.RESET_ALL
     )
-
-
-def parse_cmdline_args():
-    parser = argparse.ArgumentParser(
-        description='A program that finds the similarity'
-                    ' of flags and returns a PASS or FAIL'
-    )
-    parser.add_argument(
-        '--input',
-        nargs='?',
-        help='The file selected to compare with the template.',
-        type=str
-    )
-    parser.add_argument(
-        '--template',
-        nargs='?',
-        help='The file selected to be compared with.',
-        type=str
-    )
-    args = parser.parse_args()
-    return args
 
 
 # Check if a given image file name is similar to or different to the original
@@ -75,16 +54,14 @@ def check_img(matching_image_name: str, template) -> bool:
     return corr_pass
 
 
-if __name__ == '__main__':
-    arguments = parse_cmdline_args()
-
+def main(args):
     # If there are arguments, use them instead
     # of the original template image path
     template_img_pathname: str
-    if arguments.template is None:
+    if args.template is None:
         template_img_pathname = ORIG_TEMPLATE_IMAGE
     else:
-        template_img_pathname = arguments.template
+        template_img_pathname = args.template
 
     print("Template image:", template_img_pathname)
 
@@ -94,15 +71,37 @@ if __name__ == '__main__':
         0
     )
 
-    if arguments.input is None:
+    image_list: List[str]
+    if args.input is None:
         # Get a list of files in the image directory
-        (_, _, image_list) = next(os.walk(IMAGE_DIR))
+        (_, _, image_list) = next(walk(IMAGE_DIR))
         image_list = [f"{IMAGE_DIR}/{item}" for item in image_list]
     else:
-        image_list = [arguments.input]
+        image_list = [args.input]
 
     print("Scanning through", image_list)
 
     # Check the correlation of each image in the list
     for image in image_list:
         check_img(image, template_img)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='A program that finds the similarity'
+                    ' of flags and returns a PASS or FAIL'
+    )
+    parser.add_argument(
+        '--input',
+        nargs='?',
+        help='The file selected to compare with the template.',
+        type=str
+    )
+    parser.add_argument(
+        '--template',
+        nargs='?',
+        help='The file selected to be compared with.',
+        type=str
+    )
+
+    main(parser.parse_args())
