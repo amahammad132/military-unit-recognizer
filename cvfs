@@ -92,13 +92,13 @@ if __name__ == '__main__':
                     ' of flags and returns a PASS or FAIL'
     )
     parser.add_argument(
-        '--input',
+        '--input', '-i',
         nargs='?',
         help='The file selected to compare with the template.',
         type=str
     )
     parser.add_argument(
-        '--template',
+        '--template', '-t',
         nargs='?',
         help='The file selected to be compared with.',
         type=str
